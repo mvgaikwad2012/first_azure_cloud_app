@@ -10,6 +10,6 @@ public class HelloController {
 
     @GetMapping
     public String sayHello(){
-        return "Hello from First Azure Cloud App!";
+        return "Hello from First Azure Cloud App!\nRe-dployed";
     }
 }
