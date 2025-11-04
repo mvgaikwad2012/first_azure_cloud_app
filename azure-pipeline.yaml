@@ -1,0 +1,36 @@
+trigger:
+  branches:
+    include:
+      - master
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  javaVersion: '17'
+  mavenVersion: '3.9.0'
+  appName: 'springboot-app'
+  artifactName: 'springboot-app.jar'
+
+steps:
+  - task: Maven@4
+    inputs:
+      mavenPomFile: 'pom.xml'
+      goals: 'clean package -DskipTests'
+      mavenOptions: '-Xmx1024m'
+      javaHomeOption: 'JDKVersion'
+      jdkVersionOption: '1.17'
+      publishJUnitResults: true
+      testResultsFiles: '**/surefire-reports/*.xml'
+      sonarQubeRunAnalysis: false
+
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: '$(System.DefaultWorkingDirectory)'
+      Contents: '**/target/*.jar'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'drop'
+      publishLocation: 'Container'
