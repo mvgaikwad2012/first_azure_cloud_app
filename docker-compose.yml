@@ -1,0 +1,28 @@
+#version: "3.9"
+services:
+  mysql:
+    image: mysql:8
+    container_name: my_local_sql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Sahayog@4512
+      MYSQL_DATABASE: employee
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  app:
+    build: .
+    container_name: my_first_app_localdb
+    depends_on:
+      - mysql
+    ports:
+      - "7980:8989"
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://host.docker.internal:3306/employee"
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "Sahayog@4512"
+
+volumes:
+  db_data:
