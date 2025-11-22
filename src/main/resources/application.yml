@@ -3,12 +3,13 @@ spring:
     name: sahayog-product-service
   datasource:
     #    name: "employee"
-#    url: "jdbc:mysql://localhost:3306/employee"
-#    username: "root"
-#    password: "Sahayog@4512"
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+#    url: "jdbc:mysql://host.docker.internal:3306/employee"
+    url: "jdbc:mysql://localhost:3306/employee"
+    username: "root"
+    password: "Sahayog@4512"
+#    url: ${SPRING_DATASOURCE_URL}
+#    username: ${SPRING_DATASOURCE_USERNAME}
+#    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: "com.mysql.cj.jdbc.Driver"
 
   jpa:
@@ -19,3 +20,27 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
+  kafka:
+    admin:
+      auto-create: true
+    consumer:
+      group-id: my-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        isolation.level: read_committed
+    producer:
+      #enable idempotence for producer
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        acks: all
+        retries: 10
+        max.in.flight.requests.per.connection: 5
+        enable.idempotence: true
+      transaction-id-prefix: txn-
+logging:
+  level:
+    org.apache.kafka.clients.producer.internals.TransactionManager: debug
+    org.apache.kafka.clients.producer.internals.ProducerNetworkClient: debug
